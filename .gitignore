@@ -1,0 +1,26 @@
+# Build outputs
+**/build/
+**/out/
+**/.gradle/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+
+# Rust
+rust-core/target/
+
+# Natives (compiled binaries)
+**/natives/
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Temporary
+*.tmp
+*.bak
+*.hprof

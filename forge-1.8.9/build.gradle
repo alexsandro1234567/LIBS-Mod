@@ -1,0 +1,82 @@
+/**
+ * Project Aether - Forge 1.8.9 Build Configuration
+ * Uses legacy ForgeGradle 2.1 with Gradle 4.x compatibility
+ */
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url = "https://maven.minecraftforge.net/" }
+        maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
+    }
+    dependencies {
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT"
+    }
+}
+
+apply plugin: "java"
+apply plugin: "net.minecraftforge.gradle.forge"
+
+version = rootProject.property("mod_version")
+group = rootProject.property("mod_group")
+archivesBaseName = "${rootProject.property('mod_id')}-forge-1.8.9"
+
+sourceCompatibility = targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url = "https://maven.minecraftforge.net/" }
+}
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run"
+    
+    // MCP mappings
+    mappings = "stable_22"
+}
+
+dependencies {
+    // Common module
+    compile project(":common")
+    
+    // Annotations
+    compileOnly "org.jetbrains:annotations:24.1.0"
+}
+
+processResources {
+    inputs.property "version", project.version
+    
+    from(sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"
+        expand([
+            "version": project.version,
+            "mod_id": rootProject.property("mod_id"),
+            "mod_name": rootProject.property("mod_name"),
+            "mod_description": rootProject.property("mod_description"),
+            "mod_author": rootProject.property("mod_author")
+        ])
+    }
+    
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
+    
+    manifest {
+        attributes([
+            "Specification-Title": rootProject.property("mod_name"),
+            "Specification-Vendor": rootProject.property("mod_author"),
+            "Specification-Version": "1",
+            "Implementation-Title": project.name,
+            "Implementation-Version": project.version,
+            "Implementation-Vendor": rootProject.property("mod_author"),
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}

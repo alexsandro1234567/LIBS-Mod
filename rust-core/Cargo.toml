@@ -1,0 +1,219 @@
+[workspace]
+members = ["."]
+
+[package]
+name = "libs_core"
+version = "1.0.0"
+edition = "2021"
+authors = ["Aiblox (Alexsandro Alves de Oliveira)"]
+description = "LIBS - Native Core Engine for Minecraft"
+license = "MIT"
+repository = "https://github.com/aiblox/libs"
+keywords = ["minecraft", "mod", "vulkan", "ecs", "game-engine"]
+categories = ["game-engines", "rendering", "games"]
+
+[lib]
+name = "libs_core"
+crate-type = ["cdylib", "rlib"]
+
+# =============================================================================
+# DEPENDENCIES
+# =============================================================================
+
+[dependencies]
+# JNI Bindings
+jni = { version = "0.21", features = ["invocation"] }
+
+# Vulkan Rendering
+ash = { version = "0.38", features = ["debug"] }
+gpu-allocator = { version = "0.27", features = ["vulkan"] }
+
+# Shader Compilation & Reflection
+naga = { version = "0.20", features = ["glsl-in", "spv-out"] }
+spirv-reflect = "0.2"
+
+# Window/Surface Integration
+raw-window-handle = "0.6"
+winit = { version = "0.30", optional = true }
+
+# Linear Algebra / Math
+glam = { version = "0.29", features = ["bytemuck", "serde"] }
+ultraviolet = "0.9"
+
+# ECS (Entity Component System)
+hecs = { version = "0.10", features = ["macros", "column-serialize"] }
+shipyard = { version = "0.7", features = ["parallel", "serde1"] }
+
+# Memory Management
+bumpalo = { version = "3.16", features = ["allocator-api2", "collections"] }
+slotmap = "1.0"
+parking_lot = "0.12"
+
+# Multi-threading
+rayon = "1.10"
+crossbeam = "0.8"
+crossbeam-channel = "0.5"
+tokio = { version = "1.41", features = ["rt-multi-thread", "sync", "time", "macros"], optional = true }
+
+# Compression
+zstd = "0.13"
+lz4_flex = "0.11"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+bytemuck = { version = "1.19", features = ["derive", "extern_crate_alloc"] }
+
+# Audio
+cpal = "0.15"
+rodio = { version = "0.19", optional = true }
+
+# Cryptography (for hash verification)
+sha2 = "0.10"
+blake3 = "1.5"
+
+# Logging
+log = "0.4"
+env_logger = "0.11"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+chrono = "0.4"
+
+# Error Handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Utilities
+once_cell = "1.20"
+lazy_static = "1.5"
+bitflags = "2.6"
+num_cpus = "1.16"
+memoffset = "0.9"
+rand = "0.8"
+
+# Profiling
+puffin = { version = "0.19", optional = true }
+
+# SIMD Operations
+wide = "0.7"
+
+# Platform-specific
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Memory",
+    "Win32_System_Threading",
+    "Win32_Graphics_Dxgi",
+    "Win32_System_SystemInformation",
+    "Win32_System_Diagnostics_Debug"
+]}
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+nix = { version = "0.29", features = ["mman", "signal"] }
+
+# =============================================================================
+# DEVELOPMENT DEPENDENCIES
+# =============================================================================
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+proptest = "1.5"
+test-log = "0.2"
+
+# =============================================================================
+# FEATURES
+# =============================================================================
+
+[features]
+default = ["vulkan", "ecs", "audio-basic"]
+
+# Rendering
+vulkan = []
+raytracing = ["vulkan"]
+mesh-shaders = ["vulkan"]
+
+# ECS
+ecs = []
+
+# Audio
+audio-basic = []
+audio-raytraced = ["audio-basic"]
+
+# Network
+networking = ["tokio"]
+prediction = ["networking"]
+
+# Profiling & Debug
+profiling = ["puffin"]
+validation = []
+
+# Full feature set
+full = ["vulkan", "raytracing", "mesh-shaders", "ecs", "audio-raytraced", "networking", "prediction", "profiling"]
+
+# =============================================================================
+# BUILD CONFIGURATION
+# =============================================================================
+
+[profile.dev]
+opt-level = 1
+debug = true
+debug-assertions = true
+overflow-checks = true
+lto = false
+panic = "unwind"
+incremental = true
+
+[profile.release]
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false
+lto = "fat"
+panic = "abort"
+codegen-units = 1
+strip = "symbols"
+
+[profile.release-with-debug]
+inherits = "release"
+debug = true
+strip = "none"
+
+# Benchmark profile
+[profile.bench]
+inherits = "release"
+debug = true
+
+# =============================================================================
+# BENCHMARKS
+# =============================================================================
+
+[[bench]]
+name = "ecs_benchmark"
+harness = false
+
+[[bench]]
+name = "render_benchmark"
+harness = false
+
+[[bench]]
+name = "memory_benchmark"
+harness = false
+
+# =============================================================================
+# TESTS
+# =============================================================================
+
+[[test]]
+name = "ecs_tests"
+path = "tests/ecs_tests.rs"
+
+[[test]]
+name = "memory_tests"
+path = "tests/memory_tests.rs"
+
+[[test]]
+name = "integration_tests"
+path = "tests/integration_tests.rs"

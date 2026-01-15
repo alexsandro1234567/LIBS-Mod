@@ -1,0 +1,15 @@
+[
+{
+  "modid": "libs",
+  "name": "LIBS",
+  "description": "High-performance Minecraft engine library using hybrid Java/Rust architecture.",
+  "version": "${version}",
+  "mcversion": "1.8.9",
+  "updateUrl": "",
+  "authorList": ["Aiblox"],
+  "credits": "Aiblox (Alexsandro Alves de Oliveira)",
+  "logoFile": "assets/libs/icon.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]

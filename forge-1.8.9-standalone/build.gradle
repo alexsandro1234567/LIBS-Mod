@@ -1,0 +1,88 @@
+/**
+ * LIBS - Forge 1.8.9 Standalone Build
+ * Uses ForgeGradle 2.1 with Gradle 4.10.3
+ */
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url = "https://maven.minecraftforge.net/" }
+        maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
+    }
+    dependencies {
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT"
+    }
+}
+
+apply plugin: "java"
+apply plugin: "net.minecraftforge.gradle.forge"
+
+group = "dev.libs"
+version = "1.0.0-alpha"
+archivesBaseName = "libs-forge-1.8.9"
+
+sourceCompatibility = targetCompatibility = "1.8"
+
+compileJava {
+    options.encoding = "UTF-8"
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url = "https://maven.minecraftforge.net/" }
+}
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run"
+    mappings = "stable_22"
+    
+    // Replace tokens in source
+    replace "@VERSION@", project.version
+    replace "@MODID@", "libs"
+}
+
+dependencies {
+    // Annotations
+    compileOnly "org.jetbrains:annotations:24.1.0"
+    
+    // Log4j2 is provided by Forge
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+    
+    from(sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"
+        expand([
+            "version": project.version,
+            "mcversion": project.minecraft.version
+        ])
+    }
+    
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
+}
+
+jar {
+    // Include natives in the JAR
+    from("natives") {
+        into "natives"
+    }
+    
+    manifest {
+        attributes([
+            "Specification-Title": "LIBS",
+            "Specification-Vendor": "Aiblox",
+            "Specification-Version": "1",
+            "Implementation-Title": project.name,
+            "Implementation-Version": project.version,
+            "Implementation-Vendor": "Aiblox",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}

@@ -1,0 +1,16 @@
+[
+{
+  "modid": "aether",
+  "name": "Project Aether",
+  "description": "High-performance Minecraft engine replacement using hybrid Java/Rust architecture.",
+  "version": "${version}",
+  "mcversion": "1.8.9",
+  "url": "https://github.com/aiblox/project-aether",
+  "updateUrl": "",
+  "authorList": ["Aiblox"],
+  "credits": "The Forge and FML guys, for making this example",
+  "logoFile": "assets/aether/icon.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]
